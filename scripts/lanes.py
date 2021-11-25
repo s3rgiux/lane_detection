@@ -53,6 +53,19 @@ def region_of_interest(image):
     masked_image = cv2.bitwise_and(image,mask)
     return masked_image
 
+def region_of_interest_changed(image):
+    height = image.shape[0]
+    #polygons = np.array([
+    #    [(200,height),(1100,height),(550,250)]
+    #])          # Triangle polygon because cv2.fillPoly expects an array of polygons.
+    polygons = np.array([
+        [(50,height),(600,height),(320,0)]
+    ])          # Triangle polygon because cv2.fillPoly expects an array of polygons.
+    mask = np.zeros_like(image)   # Create a black mask to apply the above Triangle on.
+    cv2.fillPoly(mask,polygons,255)     # A complete white triangle polygon on a black mask.
+    masked_image = cv2.bitwise_and(image,mask)
+    return masked_image
+
 """ image = cv2.imread('./test_image.jpg')
 lane_image = np.copy(image)     # Always make a copy when working with arrays rather than directly assigning
 canny_image = canny(lane_image)
@@ -65,16 +78,25 @@ combo_image = cv2.addWeighted(lane_image,0.8,line_image,1,1)    # Imposing the l
 cv2.imshow('Result',combo_image)
 cv2.waitKey(0) 
 
-cap = cv2.VideoCapture("test_video.mp4")
+cap = cv2.VideoCapture(0) #cv2.VideoCapture(0) #cv2.VideoCapture("test_video.mp4")
 while(cap.isOpened()):
     _, frame = cap.read()
     canny_image = canny(frame)
-    cropped_image = region_of_interest(canny_image)
+    cropped_image = region_of_interest_changed(canny_image)#(canny_image)
     lines = cv2.HoughLinesP(cropped_image,2,np.pi/180,100,np.array([]),minLineLength=10,maxLineGap=5)
-    averaged_lines = average_slope_intercept(frame,lines)
-    line_image = display_lines(frame,averaged_lines)
-    combo_image = cv2.addWeighted(frame,0.8,line_image,1,1)    # Imposing the line_image on the original image
+    try:
+        averaged_lines = average_slope_intercept(frame,lines)
+        line_image = display_lines(frame,averaged_lines)
+        combo_image = cv2.addWeighted(frame,0.8,line_image,1,1)    # Imposing the line_image on the original image
+        cv2.imshow('Result',combo_image)
+    except:
+        cv2.imshow('Result',frame)
+        print("error line")
+    #line_image = display_lines(frame,averaged_lines)
+    #combo_image = cv2.addWeighted(frame,0.8,line_image,1,1)    # Imposing the line_image on the original image
 
-    cv2.imshow('Result',combo_image)
+    #cv2.imshow('Result',combo_image)
+    #cv2.imshow('Result',cropped_image)
     cv2.waitKey(1)
- """
+
+"""

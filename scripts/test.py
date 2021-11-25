@@ -27,7 +27,7 @@ class LaneDetect:
         except CvBridgeError as e:
             print(e)
         print("frame")
-        self.extract_and_print_lines(cv_image)
+        #self.extract_and_print_lines(cv_image)
         print("finishe")
 
 
